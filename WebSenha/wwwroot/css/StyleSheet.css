@@ -1,0 +1,248 @@
+﻿html, body {
+    height: 100%; /* Faz o HTML e o body ocuparem 100% da altura */
+    margin: 0; /* Remove margens */
+    background: MediumAquamarine;
+}
+
+.container-fluid {
+    display: flex;
+    flex-direction: column; /* Alinha os itens em coluna */
+    min-height: 100vh; /* Garante que ocupe pelo menos a altura da tela */
+    margin: 0; /* Remove margem */
+    position: fixed; /* Fixa no topo */
+    top: 0; /* Mantém no topo */
+    left: 0;
+}
+
+.cabecalho {
+    height: 60px;
+    background-color: teal;
+    color: white;
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ocupa toda a largura */
+    margin: 0; /* Remove margem */
+    position: fixed; /* Fixa no topo */
+    top: 0; /* Mantém no topo */
+    left: 0; /* Estende para a esquerda */
+    right: 0; /* Estende para a direita */
+    z-index: 1000; /* Para garantir que fique acima de outros elementos */
+}
+
+.conteudo {
+    display: flex;
+    flex: 1; /* Faz o conteúdo ocupar o espaço restante */
+    height: calc(100% - 100px); /* Altura total menos a altura do cabeçalho e do rodapé */
+    padding-top: 0px; /* Para evitar que o conteúdo fique atrás do cabeçalho */
+}
+
+.conteudo-Painel {
+    border-radius: 7px;
+    margin: 0; /* Remove a margem */
+    padding: 0; /* Remove o padding */
+}
+
+#video-publicidade {
+    display: flex;
+    justify-content: flex-start; /* Alinha o conteúdo à esquerda */
+    align-items: center;
+    height: calc(100vh - 100px); /* Altura total da tela menos cabeçalho e rodapé */
+    width: auto; /* Ocupa toda a largura */
+    flex: 1; /* Permite que o vídeo ocupe o espaço restante */
+}
+
+    #video-publicidade video {
+        margin-left: 0px;
+        height: 100%; /* O vídeo ocupa toda a altura do contêiner */
+        width: 100%; /* O vídeo ocupa toda a largura do contêiner */
+        object-fit: cover; /* Garante que o vídeo preencha o contêiner sem distorção */
+        flex: 1; /* Permite que o vídeo ocupe o espaço restante */
+    }
+
+#senha-container {
+    flex: 0 0 25%; /* Reduz para 25% do espaço */
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: flex-start; /* Alinha à esquerda */
+    padding: 0; /* Remove qualquer padding */
+    margin: 0; /* Remove margens */
+    height: 100%; /* Para ocupar toda a altura disponível */
+}
+
+.senha-alinhada {
+    font-size: 50px; /* Tamanho da fonte */
+    color: #fff; /* Cor do texto */
+    text-align: left; /* Alinha o texto à esquerda */
+    background: CadetBlue; /* Verde escuro para a área de senha */
+    padding: 0; /* Remove espaçamento interno para colar ao lado esquerdo */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+    margin: 0; /* Remove margens */
+    width: auto; /* Faz a senha ocupar toda a largura do contêiner */
+    position: relative; /* Posiciona a senha de forma absoluta */
+    left: 320px; /* Cola ao lado esquerdo */
+    top: 150px; /* Alinha ao topo do contêiner */
+}
+
+.ultima-chamada-alinhada {
+    font-size: 20px;
+    text-align: center;
+    padding: 5rem;
+    margin: 0px 0; /* Margem superior e inferior */
+    background: MediumAquamarine; /* Verde escuro */
+    color: white; /* Texto branco */
+    border-radius: 4px;
+    width: 100%; /* Ocupa toda a largura */
+    position: fixed; /* Fixa a posição */
+    bottom: 50px; /* Distância do rodapé */
+    left: 0; /* Alinha à esquerda */
+    z-index: 999; /* Garante que fique acima de outros elementos */
+}
+
+.senhas-chamadas {
+    margin-top: 60px; /* Espaço entre as últimas chamadas e o conteúdo acima */
+}
+
+.tipo-senha {
+    font-size: 40px; /* Tamanho da fonte para o tipo de senha */
+    color: #ffd600; /* Cor para diferenciar (ou escolha outra cor que você preferir) */
+    margin-left: 10px; /* Espaço entre a senha e o tipo */
+}
+
+
+.rodape {
+    height: 50px;
+    background-color: teal;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed; /* Fixo na parte inferior */
+    bottom: 0; /* Mantém na parte inferior */
+    left: 0; /* Estende para a esquerda */
+    right: 0; /* Estende para a direita */
+    border-radius: 0 0 7px 7px;
+}
+html, body {
+    height: 100%; /* Faz o HTML e o body ocuparem 100% da altura */
+    margin: 0; /* Remove margens */
+    background: MediumAquamarine;
+}
+
+.container-fluid {
+    display: flex;
+    flex-direction: column; /* Alinha os itens em coluna */
+    min-height: 100vh; /* Garante que ocupe pelo menos a altura da tela */
+    margin: 0; /* Remove margem */
+    position: fixed; /* Fixa no topo */
+    top: 0; /* Mantém no topo */
+    left: 0;
+}
+
+.cabecalho {
+    height: 60px;
+    background-color: teal;
+    color: white;
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ocupa toda a largura */
+    margin: 0; /* Remove margem */
+    position: fixed; /* Fixa no topo */
+    top: 0; /* Mantém no topo */
+    left: 0; /* Estende para a esquerda */
+    right: 0; /* Estende para a direita */
+    z-index: 1000; /* Para garantir que fique acima de outros elementos */
+}
+
+.conteudo {
+    display: flex;
+    flex: 1; /* Faz o conteúdo ocupar o espaço restante */
+    height: calc(100% - 100px); /* Altura total menos a altura do cabeçalho e do rodapé */
+    padding-top: 0px; /* Para evitar que o conteúdo fique atrás do cabeçalho */
+}
+
+.conteudo-Painel {
+    border-radius: 7px;
+    margin: 0; /* Remove a margem */
+    padding: 0; /* Remove o padding */
+}
+
+#video-publicidade {
+    display: flex;
+    justify-content: flex-start; /* Alinha o conteúdo à esquerda */
+    align-items: center;
+    height: calc(100vh - 100px); /* Altura total da tela menos cabeçalho e rodapé */
+    width: auto; /* Ocupa toda a largura */
+    flex: 1; /* Permite que o vídeo ocupe o espaço restante */
+}
+
+    #video-publicidade video {
+        margin-left: 0px;
+        height: 100%; /* O vídeo ocupa toda a altura do contêiner */
+        width: 100%; /* O vídeo ocupa toda a largura do contêiner */
+        object-fit: cover; /* Garante que o vídeo preencha o contêiner sem distorção */
+        flex: 1; /* Permite que o vídeo ocupe o espaço restante */
+    }
+
+#senha-container {
+    flex: 0 0 25%; /* Reduz para 25% do espaço */
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: flex-start; /* Alinha à esquerda */
+    padding: 0; /* Remove qualquer padding */
+    margin: 0; /* Remove margens */
+    height: 100%; /* Para ocupar toda a altura disponível */
+}
+
+.senha-alinhada {
+    font-size: 50px; /* Tamanho da fonte */
+    color: #fff; /* Cor do texto */
+    text-align: left; /* Alinha o texto à esquerda */
+    background: CadetBlue; /* Verde escuro para a área de senha */
+    padding: 0; /* Remove espaçamento interno para colar ao lado esquerdo */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+    margin: 0; /* Remove margens */
+    width: auto; /* Faz a senha ocupar toda a largura do contêiner */
+    position: relative; /* Posiciona a senha de forma absoluta */
+    left: 320px; /* Cola ao lado esquerdo */
+    top: 150px; /* Alinha ao topo do contêiner */
+}
+
+.ultima-chamada-alinhada {
+    font-size: 20px;
+    text-align: center;
+    padding: 5rem;
+    margin: 0px 0; /* Margem superior e inferior */
+    background: MediumAquamarine; /* Verde escuro */
+    color: white; /* Texto branco */
+    border-radius: 4px;
+    width: 100%; /* Ocupa toda a largura */
+    position: fixed; /* Fixa a posição */
+    bottom: 50px; /* Distância do rodapé */
+    left: 0; /* Alinha à esquerda */
+    z-index: 999; /* Garante que fique acima de outros elementos */
+}
+
+.senhas-chamadas {
+    margin-top: 60px; /* Espaço entre as últimas chamadas e o conteúdo acima */
+}
+
+.tipo-senha {
+    font-size: 40px; /* Tamanho da fonte para o tipo de senha */
+    color: #ffd600; /* Cor para diferenciar (ou escolha outra cor que você preferir) */
+    margin-left: 10px; /* Espaço entre a senha e o tipo */
+}
+
+
+.rodape {
+    height: 50px;
+    background-color: teal;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed; /* Fixo na parte inferior */
+    bottom: 0; /* Mantém na parte inferior */
+    left: 0; /* Estende para a esquerda */
+    right: 0; /* Estende para a direita */
+    border-radius: 0 0 7px 7px;
+}

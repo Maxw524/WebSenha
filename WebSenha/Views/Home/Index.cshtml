@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid">
+    <nav class="cabecalho">
+        <div class="row w-100">
+            <div class="col text-center">
+                <h1 class="painel-senha">Painel de Senhas</h1>
+            </div>
+            <div class="col-auto">
+                <img src="c:\projetos\sistema de senha\websenha\websenha\img\logosicoobcredipinho-removebg-preview.png" />
+            </div>
+        </div>
+    </nav>
+
+    <div class="row conteudo">
+        <div class="col-md-6 conteudo-Painel" id="video-publicidade">
+            <video controls>
+                <source src="caminho/do/video.mp4" type="video/mp4">
+                Seu navegador não suporta o elemento de vídeo.
+            </video>
+        </div>
+
+        <div class="col-md-6 conteudo-Painel" id="senha-container">
+            <h1 class="senha-alinhada">
+                Senha:<br>
+                <span id="senha"></span><br><br>
+                Guichê:<br>
+                <span id="guiche"></span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="ultima-chamada-alinhada">
+        Últimas Chamadas
+    </div>
+
+    <div id="senhasChamadas" class="senhas-chamadas"></div>
+
+    <footer class="rodape">
+        <p>© 2024 Sicoob Credipinho</p>
+    </footer>
+</div>
+
+<link href="~/css/painel.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/painel.js"></script>

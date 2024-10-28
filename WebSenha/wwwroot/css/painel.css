@@ -1,0 +1,106 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    background: #e0f7fa; /* Um tom suave e leve */
+    font-family: 'Arial', sans-serif;
+}
+
+.container-fluid {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.cabecalho {
+    height: 60px;
+    background-color: #004d40; /* Cor escura e sofisticada */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.painel-senha {
+    font-size: 24px;
+    font-weight: bold; /* Destaca o título */
+}
+
+.conteudo {
+    display: flex;
+    flex: 1;
+    height: calc(100% - 60px); /* Altura total menos cabeçalho */
+    padding: 20px; /* Adiciona padding ao conteúdo */
+}
+
+#video-publicidade {
+    flex: 1; /* O vídeo ocupa a maior parte do espaço */
+    display: flex;
+    justify-content: center; /* Centraliza o vídeo */
+    align-items: center;
+    border-radius: 10px; /* Bordas arredondadas */
+    overflow: hidden; /* Esconde excessos */
+}
+
+    #video-publicidade video {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+#senha-container {
+    flex: 0 0 30%; /* Aumenta o espaço para a senha */
+    display: flex;
+    flex-direction: column; /* Alinha o conteúdo verticalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: stretch; /* Estica para a largura total */
+    padding: 20px;
+}
+
+.senha-alinhada, .guiche-alinhado {
+    font-size: 50px; /* Tamanho da fonte */
+    color: #fff;
+    background: #00796b; /* Cor de fundo mais escura */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 15px; /* Espaço inferior */
+}
+
+.ultima-chamada-alinhada {
+    font-size: 18px; /* Tamanho de fonte reduzido */
+    text-align: center;
+    padding: 15px;
+    margin: 20px 0;
+    background: #004d40;
+    color: white;
+    border-radius: 4px;
+    width: 90%; /* Limita a largura */
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza horizontalmente */
+    z-index: 999;
+}
+
+.rodape {
+    height: 50px;
+    background-color: #004d40;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 7px 7px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); /* Sombra superior */
+}
