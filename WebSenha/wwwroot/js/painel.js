@@ -1,43 +1,43 @@
-﻿var painel = new Object();
+﻿const painel = {
+    ListaSenhas: function () {
+        $.ajax({
+            type: "POST",
+            timeout: 50000,
+            url: "/api/ListaSenhas",
+            async: true,
+            success: function (jsonRetornado) {
+                // Atualiza a senha
+                if (jsonRetornado.senha) {
+                    $("#senha").text(jsonRetornado.senha.senha);
+                    $("#guiche").text(jsonRetornado.senha.guiche);
 
-painel.ListaSenhas = function () {
-    $.ajax({
-        type: "POST",
-        timeout: 50000,
-        url: "/api/ListaSenhas",
-        async: true,
-        success: function (jsonRetornado) {
+                    // Exibe o tipo de senha
+                    const tipoSenha = jsonRetornado.senha.tipo;
+                    $("#tipo-senha").text(tipoSenha === 'P' ? 'Preferencial' : 'Normal');
+                }
 
-            if (jsonRetornado.senha != null && jsonRetornado.senha != undefined) {
-                $("#senha").text(jsonRetornado.senha.senha);
-                $("#guiche").text(jsonRetornado.senha.guiche);
+                // Atualiza a lista de senhas chamadas
+                if (jsonRetornado.senhas) {
+                    const $senhasChamadas = $("#senhasChamadas");
+                    $senhasChamadas.empty(); // Limpa o conteúdo antes de adicionar novas senhas
 
-                // Exibe o tipo de senha
-                var tipoSenha = jsonRetornado.senha.tipo; 
-                $("#tipo-senha").text(tipoSenha === 'P' ? 'Preferencial' : 'Normal');
-            }
-            if (jsonRetornado.senhas != null && jsonRetornado.senhas != undefined) {
-
-                $("#senhasChamadas").html(""); 
-
-                jsonRetornado.senhas.forEach(function (item) {
-                    var span = $("<span>", {
-                        class: 'senha-chamada-alinhada'
+                    $.each(jsonRetornado.senhas, function (index, item) {
+                        const tipoChamado = item.tipo;
+                        const span = $("<span>", {
+                            class: 'senha-chamada-alinhada',
+                            text: `Senha: ${item.senha} - Guichê: ${item.guiche} (${tipoChamado === 'P' ? 'Preferencial' : 'Normal'})`
+                        });
+                        $senhasChamadas.append(span);
                     });
-                    // Inclui o tipo de senha na exibição
-                    var tipoChamado = item.tipo; 
-                    span.text("Senha: " + item.senha + " - Guichê: " + item.guiche + " (" + (tipoChamado === 'P' ? 'Preferencial' : 'Normal') + ")");
-
-                    $("#senhasChamadas").append(span); 
-                });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Erro:', error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('Erro:', error);
-        }
-    });
-    setTimeout(painel.ListaSenhas, 2000);
-}
+        });
+        setTimeout(this.ListaSenhas.bind(this), 2000); // Mantém o contexto do 'this'
+    }
+};
 
 $(function () {
     painel.ListaSenhas();

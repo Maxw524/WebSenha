@@ -104,3 +104,22 @@
     border-radius: 0 0 7px 7px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); /* Sombra superior */
 }
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+    .senha-alinhada, .guiche-alinhado {
+        font-size: 30px; /* Diminui o tamanho da fonte em telas menores */
+    }
+
+    .ultima-chamada-alinhada {
+        font-size: 14px; /* Ajusta a fonte para dispositivos menores */
+    }
+
+    .cabecalho {
+        height: 50px; /* Diminui a altura do cabeçalho */
+    }
+
+    .rodape {
+        height: 40px; /* Diminui a altura do rodapé */
+    }
+}
