@@ -1,11 +1,11 @@
-using System;
+ï»¿using System;
 
 namespace WebSenha.Models
 {
-    // Modelo que representa a informação de erro para a exibição
+    // Modelo que representa a informaï¿½ï¿½o de erro para a exibiï¿½ï¿½o
     public class ErrorViewModel
     {
-        // ID da requisição que gerou o erro
+        // ID da requisiï¿½ï¿½o que gerou o erro
         public string RequestId { get; set; }
 
         // Propriedade que indica se o RequestId deve ser mostrado

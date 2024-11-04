@@ -1,23 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebSenha.Models; // Certifique-se de que este é o namespace correto
+using WebSenha.Models;
 
-namespace WebSenha.Data // Certifique-se de que este é o novo namespace
+namespace WebSenha.Data // Atualizado para o novo nome do projeto
 {
     public class QueueContext : DbContext
     {
         public QueueContext(DbContextOptions<QueueContext> options) : base(options) { }
 
-        // DbSet para Painéis
-        public DbSet<Painel> Painels { get; set; } // O nome foi alterado para o plural para seguir as convenções
-
-        // DbSet para Tickets
+        public DbSet<Painel> Painels { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configurações adicionais podem ser feitas aqui
-            // Exemplo: modelBuilder.Entity<Painel>().ToTable("Painels");
-            // Adicione qualquer configuração específica para suas entidades aqui
+            modelBuilder.Entity<Painel>(entity =>
+            {
+                entity.ToTable("Painel");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.Senha)
+                    .IsRequired() // Define como obrigatório
+                    .HasMaxLength(100) // Define o tamanho máximo
+                    .HasColumnName("Senha");
+
+                entity.Property(e => e.Guiche)
+                    .HasMaxLength(50) // Define o tamanho máximo
+                    .HasColumnName("Guiche");
+            });
+
+            modelBuilder.Entity<Ticket>(entity =>
+            {
+                // Configure as propriedades do Ticket aqui, se necessário
+                // Exemplo:
+                // entity.ToTable("Tickets");
+                // entity.Property(e => e.Id).HasColumnName("id");
+                // ... (outras configurações)
+            });
         }
     }
 }

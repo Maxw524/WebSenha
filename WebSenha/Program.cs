@@ -1,23 +1,24 @@
-using Microsoft.AspNetCore.Builder;
+ï»¿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebSenha.Data; // Ajuste para seu novo namespace
+using WebSenha.Data; 
 using WebSenha.Models;
 using System.Linq;
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona serviços ao contêiner.
+// Adiciona serviï¿½os ao contï¿½iner.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllersWithViews(); // Adiciona suporte para controladores e views
 
-
-// Configura o DbContext com a string de conexão (use SQLite para simplicidade)
+// Configura o DbContext com a string de conexï¿½o para SQL Server
 builder.Services.AddDbContext<QueueContext>(options =>
-    options.UseSqlite("Data Source=queuesystem.db"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SistemaSenha"))); // Use SQL Server aqui
 
 // Adiciona suporte ao CORS
 builder.Services.AddCors(options =>
@@ -30,22 +31,38 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configura o pipeline de requisições HTTP.
+// Configura o pipeline de requisiï¿½ï¿½es HTTP.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage(); // Para ver mensagens de erro no desenvolvimento
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error"); // Pï¿½gina de erro genï¿½rica
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAllOrigins"); // Usa a política de CORS
+app.UseStaticFiles(); // Para servir arquivos estï¿½ticos de wwwroot
+app.UseRouting();
 
+app.UseCors("AllowAllOrigins"); // Usa a polï¿½tica de CORS
+app.UseAuthorization();
+
+// Mapeia as rotas padrï¿½o para o MVC
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Aqui, vocï¿½ pode adicionar os endpoints restantes para sua API
 // Endpoint para criar um painel
 app.MapPost("/painels", async (Painel painel, QueueContext db) =>
 {
     if (painel is null)
     {
-        return Results.BadRequest("Painel não pode ser nulo.");
+        return Results.BadRequest("Painel nï¿½o pode ser nulo.");
     }
 
     db.Painels.Add(painel);
@@ -54,7 +71,7 @@ app.MapPost("/painels", async (Painel painel, QueueContext db) =>
     return Results.Created($"/painels/{painel.Id}", painel);
 });
 
-// Endpoint para listar painéis
+// Endpoint para listar painï¿½is
 app.MapGet("/painels", async (QueueContext db) =>
 {
     var painels = await db.Painels.ToListAsync();
@@ -68,7 +85,7 @@ app.MapPut("/painels/{id}", async (int id, Painel updatedPainel, QueueContext db
     if (painel is null) return Results.NotFound();
 
     painel.Senha = updatedPainel.Senha; // Atualiza a senha do painel
-    painel.Guiche = updatedPainel.Guiche; // Atualiza o guichê
+    painel.Guiche = updatedPainel.Guiche; // Atualiza o guichï¿½
     await db.SaveChangesAsync();
 
     return Results.NoContent(); // Retorna 204 No Content
@@ -85,18 +102,18 @@ app.MapDelete("/painels/{id}", async (int id, QueueContext db) =>
     return Results.NoContent(); // Retorna 204 No Content
 });
 
-// Endpoint para criar um ticket com número automático
+// Endpoint para criar um ticket com nï¿½mero automï¿½tico
 app.MapPost("/tickets", async (Ticket ticket, QueueContext db) =>
 {
-    if (ticket.PainelId <= 0) // Verifica se o PainelId é válido
+    if (ticket.PainelId <= 0) // Verifica se o PainelId ï¿½ vï¿½lido
     {
         return Results.BadRequest("O PainelId deve ser fornecido.");
     }
 
-    // Busca o último ticket criado
+    // Busca o ï¿½ltimo ticket criado
     var lastTicket = await db.Tickets.OrderByDescending(t => t.Id).FirstOrDefaultAsync();
 
-    // Gera o próximo número sequencial
+    // Gera o prï¿½ximo nï¿½mero sequencial
     var nextTicketNumber = lastTicket == null ? "0001" : (int.Parse(lastTicket.Number) + 1).ToString("D4");
 
     var newTicket = new Ticket
@@ -145,7 +162,7 @@ app.MapPut("/tickets/cancel/{id}", async (int id, QueueContext db) =>
     return Results.NoContent(); // Retorna 204 No Content
 });
 
-// Endpoint para chamar o próximo ticket de um painel
+// Endpoint para chamar o prï¿½ximo ticket de um painel
 app.MapPut("/painels/{painelId}/next-ticket", async (int painelId, QueueContext db) =>
 {
     var nextTicket = await db.Tickets

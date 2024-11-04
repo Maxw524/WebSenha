@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using WebSenha.Data;
 using WebSenha.Models;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebSenha.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly QueueContext _context; // Adicione o contexto de dados
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, QueueContext context)
         {
             _logger = logger;
+            _context = context; // Inicialize o contexto
         }
 
         public IActionResult Index()
@@ -26,10 +31,10 @@ namespace WebSenha.Controllers
         }
 
         // Ação para obter a lista de senhas
-        public IActionResult ListaSenhas()
+        public async Task<IActionResult> ListaSenhas()
         {
-            // Lógica para obter e passar a lista de senhas para a view
-            return View(); // Retorna a view correspondente
+            var senhas = await _context.Painels.ToListAsync(); // Obtenha a lista de senhas
+            return View(senhas); // Passa a lista de senhas para a view
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -40,59 +40,87 @@
 }
 
 #video-publicidade {
-    flex: 1; /* O vídeo ocupa a maior parte do espaço */
+    flex: 1;
     display: flex;
-    justify-content: center; /* Centraliza o vídeo */
+    justify-content: center;
     align-items: center;
-    border-radius: 10px; /* Bordas arredondadas */
-    overflow: hidden; /* Esconde excessos */
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative; /* Necessário para deslocar o elemento */
+    top: 0; 
+    height: 700px; 
 }
 
     #video-publicidade video {
-        height: 100%;
         width: 100%;
+        height: 100%;
         object-fit: cover;
     }
 
+
 #senha-container {
-    flex: 0 0 30%; /* Aumenta o espaço para a senha */
+    flex: 0 0 50%; /* Aumenta o espaço para a senha */
     display: flex;
     flex-direction: column; /* Alinha o conteúdo verticalmente */
     justify-content: center; /* Centraliza verticalmente */
     align-items: stretch; /* Estica para a largura total */
-    padding: 20px;
+    padding: 200px;
 }
 
 .senha-alinhada, .guiche-alinhado {
-    font-size: 50px; /* Tamanho da fonte */
+    font-size: 5vw; /* Tamanho da fonte proporcional à largura da viewport */
     color: #fff;
-    background: #00796b; /* Cor de fundo mais escura */
+    background: #00796b;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    width: 100%;
+    width: calc(100% - 5cm); /* Subtrai 5 cm da largura total */
     text-align: center; /* Centraliza o texto */
-    margin-bottom: 15px; /* Espaço inferior */
+    margin-bottom: 15px;
+    position: absolute; /* Necessário para deslocar o elemento */
+    left: 5cm; /* Desloca o elemento 5 cm para a direita */
 }
+
+/* Media Queries para ajustes finos em diferentes tamanhos de tela */
+@media (max-width: 768px) {
+    .senha-alinhada, .guiche-alinhado {
+        font-size: 8vw; /* Ajusta o tamanho da fonte para telas menores */
+        top: 2cm; /* Ajusta a posição para telas menores */
+        left: 2cm; /* Ajusta a posição para telas menores */
+        width: calc(100% - 4cm); /* Subtrai 4 cm da largura total */
+    }
+}
+
+@media (min-width: 1200px) {
+    .senha-alinhada, .guiche-alinhado {
+        font-size: 60px; /* Tamanho fixo para telas muito grandes */
+        top: 2cm; /* Mantém a posição para telas grandes */
+        left: 4cm; /* Mantém a posição para telas grandes */
+        width: calc(100% - 5cm); /* Mantém a largura para telas grandes */
+    }
+}
+
+
+
 
 .ultima-chamada-alinhada {
     font-size: 18px; /* Tamanho de fonte reduzido */
     text-align: center;
-    padding: 15px;
-    margin: 20px 0;
+    padding: 35px;
+    margin: 0px 0;
     background: #004d40;
     color: white;
-    border-radius: 4px;
-    width: 90%; /* Limita a largura */
-    position: fixed;
-    bottom: 60px;
+    border-radius: 5px;
+    width: 120%; 
+    position: relative;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%); /* Centraliza horizontalmente */
     z-index: 999;
 }
 
 .rodape {
-    height: 50px;
+    height: 40px;
     background-color: #004d40;
     color: white;
     text-align: center;
