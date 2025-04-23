@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Token de Senha";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- CSS embutido -->
+    <style>
+        html, body {
+            height: 100%; /* Garante que a página cubra 100% da altura da janela */
+            margin: 0;
+        }
+
+        body {
+            background-image: url('/img/background.png'); /* Caminho da imagem ajustado */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100%; /* Garante que a imagem de fundo preencha toda a altura */
+        }
+
+        .btn-block {
+            width: 1100px; /* Ocupa quase toda a tela na horizontal */
+            height: 5cm;
+            font-family: Jazz LET;
+            font-size: 3.5rem; /* Ajusta o tamanho da fonte */
+            font-weight: bold; /* Deixa a fonte mais grossa */
+            background-color: #EDECEC; /* Cor de fundo branca */
+            color: black; /* Cor do texto preta */
+            border: 2px solid #000; /* Bordas pretas */
+            margin-bottom: 50px; /* Aumenta o espaço entre os botões */
+        }
+
+            .btn-block:hover {
+                background-color: #f0f0f0; /* Cor de fundo ao passar o mouse */
+            }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex flex-column align-items-center mt-5 w-100">
+        <button id="btnAtendimento" class="btn btn-lg btn-primary btn-block mb-3" onclick="redirectToSelection('Atendimento')">Atendimento</button>
+        <button id="btnCaixa" class="btn btn-lg btn-secondary btn-block" onclick="redirectToSelection('Caixa')">Caixa</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function redirectToSelection(service) {
+            console.log("Botão clicado: " + service); // Log para depuração
+
+            // A URL gerada corretamente para a ação 'SelecionarTipo' no controlador 'Home'
+            var url = '@Url.Action("SelecionarTipo", "Home")?service=' + service;
+
+            // Realizando o redirecionamento para a URL gerada
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+</html>

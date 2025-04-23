@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "Atendimento";
+}
+
+<!-- Cabeçalho Meta para Responsividade -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Adicionando o CSS -->
+<link href="/css/Atendimento.css" rel="stylesheet" />
+
+<!-- Página -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Menu de Navegação Vertical -->
+        <div class="col-md-3 col-12">
+            <div class="menu-lateral">
+                <ul class="nav flex-column action-buttons">
+                    <!-- Botões no Menu Lateral -->
+                    <li class="menu-item">
+                        <a href="#" class="menu-link active">
+                            <i class="fas fa-home"></i> Início
+                        </a>
+                    </li>
+                    <!-- Exibindo o nome do usuário logado antes de "Bem-vindo" -->
+                    <li class="menu-item">
+                        <span class="menu-link">
+                            <i class="fas fa-user"></i> @User.Identity.Name
+                        </span>
+                    </li>
+                    <li class="menu-item">
+                        <span class="menu-link">
+                            <i class="fas fa-user"></i> Bem-vindo
+                        </span>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="fas fa-cogs"></i> Configurações
+                        </a>
+                    </li>
+
+                    <!-- Botões de Ação -->
+                    <li class="menu-item">
+                        <button id="chamarSenhaBtn" class="btn btn-primary w-100">
+                            <i class="fas fa-arrow-right"></i> Chamar Senha
+                        </button>
+                    </li>
+                    <li class="menu-item">
+                        <button id="naoCompareceuBtn" class="btn btn-danger w-100">
+                            <i class="fas fa-times"></i> Não Compareceu
+                        </button>
+                    </li>
+                    <li class="menu-item">
+                        <button id="btnChamarNovamente" class="btn btn-info w-100">
+                            <i class="fas fa-sync-alt"></i> Chamar Novamente
+                        </button>
+                    </li>
+
+                    <!-- Filtros de Atendimento (Agora abaixo dos botões) -->
+                    <li class="menu-item">
+                        <label for="tipoAtendimento">Tipo de Atendimento</label>
+                        <select id="tipoAtendimento" class="form-control">
+                            <option value="P">Preferencial</option>
+                            <option value="N">Normal</option>
+                            <option value="A" selected>Automático</option>
+                        </select>
+                    </li>
+                    <li class="menu-item">
+                        <label for="tipoServico">Tipo de Serviço</label>
+                        <select id="tipoServico" class="form-control">
+                            <option value="Atendimento">Atendimento</option>
+                            <option value="Caixa" selected>Caixa</option>
+                        </select>
+                    </li>
+                    <li class="menu-item">
+                        <label for="guiche">Número do Guichê</label>
+                        <input type="text" id="guiche" class="form-control" placeholder="Digite o número do guichê">
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="col-md-9 col-12">
+            <!-- Título da Página -->
+            <header class="page-header">
+                <h2>Atendimento - Senhas Pendentes</h2>
+            </header>
+            <!-- Fila de Senhas -->
+            <section class="fila-senhas">
+                <h4>Fila de Senhas</h4>
+                <div id="senhasFila" class="list-group">
+                    <!-- Senhas serão carregadas dinamicamente -->
+                </div>
+            </section>
+
+            <!-- Controle da Senha Selecionada -->
+            <section id="senhaSelecionadaContainer" class="container-senha-selecionada" style="display: none;">
+                <div class="card">
+                    <h5>Senha Selecionada:</h5>
+                    <div id="senhaSelecionada" class="senha-display"></div>
+                    <div id="cronometro">Tempo decorrido: <span id="tempoDecorrido">0s</span></div>
+                </div>
+                <div class="botoes-acao">
+                    <button id="btnIniciarAtendimento" class="btn btn-success">
+                        <i class="fas fa-play"></i> Iniciar Atendimento
+                    </button>
+                    <button id="btnFinalizarAtendimento" class="btn btn-danger">
+                        <i class="fas fa-stop"></i> Finalizar Atendimento
+                    </button>
+                    <button id="encaminharSenha" class="btn btn-info">
+                        <i class="fas fa-arrow-right"></i> Encaminhar Senha
+                    </button>
+                </div>
+            </section>
+            <!-- Modal para Encaminhar Senha -->
+            <div class="modal fade" id="encaminharSenhaModal" tabindex="-1" role="dialog" aria-labelledby="encaminharSenhaModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="encaminharSenhaModalLabel">Encaminhar Senha</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Selecione o serviço para onde deseja encaminhar a senha:</p>
+                            <select id="servicoDestino" class="form-control">
+                                <!-- Opções serão preenchidas dinamicamente -->
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="button" id="confirmarEncaminhamento" class="btn btn-primary">Encaminhar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container de Senhas Encaminhadas -->
+            <div id="senhasEncaminhadasContainer" class="container mt-4" style="display:none;">
+                <h5>Senhas Encaminhadas</h5>
+                <div id="senhasEncaminhadasLista"></div>
+            </div>
+            <!-- Notificação -->
+            <section id="notification" class="notificacao" style="display: none;"></section>
+        </div>
+    </div>
+</div>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- FontAwesome -->
+<script src="~/js/Atendimento.js"></script>

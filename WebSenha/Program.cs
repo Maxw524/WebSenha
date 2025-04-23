@@ -1,68 +1,134 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebSenha.Data; 
+using WebSenha.Data;
 using WebSenha.Models;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using WebSenha.Services;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona servi�os ao cont�iner.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllersWithViews(); // Adiciona suporte para controladores e views
+// Configuração para escutar em todos os IPs nas portas 5000 e 6766
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    // Escuta em todos os IPs na porta 5000
+    serverOptions.ListenAnyIP(5000); // Porta 5000
 
-// Configura o DbContext com a string de conex�o para SQL Server
+    // Escuta em todos os IPs na porta 6766
+    serverOptions.ListenAnyIP(6766); // Porta 6766
+});
+
+
+// Adiciona suporte a APIs e controllers com views
+builder.Services.AddEndpointsApiExplorer();  // Swagger
+builder.Services.AddSwaggerGen();            // Swagger
+builder.Services.AddControllersWithViews();  // Suporte a Controllers e Views
+builder.Services.AddSignalR(); // Adiciona suporte ao SignalR
+
+// Configuração do DbContext com a string de conexão do banco de dados
 builder.Services.AddDbContext<QueueContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SistemaSenha"))); // Use SQL Server aqui
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SistemaSenha")));
 
-// Adiciona suporte ao CORS
+// Registra o TokenService no DI (injeção de dependência)
+builder.Services.AddScoped<ITokenService, TokenService>();  // Adicionando o serviço para gerar senhas
+
+// Configuração do CORS (origens permitidas)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
+    options.AddPolicy("AllowSpecificOrigins", builder =>
+        builder.WithOrigins("http://localhost:3000", "http://192.168.1.100:6766") // Adicione o IP da sua rede local ou qualquer origem necessária
+               .AllowAnyMethod()
+               .AllowAnyHeader());
 });
 
 var app = builder.Build();
 
-// Configura o pipeline de requisi��es HTTP.
-if (app.Environment.IsDevelopment())
+// Middleware para tratamento global de exceções
+app.UseExceptionHandler(errorApp =>
 {
-    app.UseDeveloperExceptionPage(); // Para ver mensagens de erro no desenvolvimento
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        if (exception != null)
+        {
+            await context.Response.WriteAsync(new
+            {
+                message = "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+                details = exception.Message
+            }.ToString());
+        }
+    });
+});
+app.UseStaticFiles(new StaticFileOptions
 {
-    app.UseExceptionHandler("/Home/Error"); // P�gina de erro gen�rica
-    app.UseHsts();
-}
+    ContentTypeProvider = new FileExtensionContentTypeProvider
+    {
+        Mappings = {
+            [".mp3"] = "audio/mpeg",
+            [".ogg"] = "audio/ogg",
+            [".wav"] = "audio/wav"
+        }
+    }
+});
 
-app.UseHttpsRedirection();
-app.UseStaticFiles(); // Para servir arquivos est�ticos de wwwroot
-app.UseRouting();
+// Configuração do Pipeline de requisições HTTP
+app.UseStaticFiles();  // Serve arquivos estáticos (como CSS, JS, etc.)
+app.UseRouting();      // Habilita o roteamento de URLs
+app.UseCors("AllowSpecificOrigins");  // Aplica a política CORS
 
-app.UseCors("AllowAllOrigins"); // Usa a pol�tica de CORS
-app.UseAuthorization();
+// Desabilita o redirecionamento para HTTPS (caso você não tenha SSL configurado)
+//app.UseHttpsRedirection();  // Redireciona HTTP para HTTPS - Desabilite se não usar SSL
 
-// Mapeia as rotas padr�o para o MVC
+app.UseAuthorization();  // Habilita a autorização
+
+// Mapear o Hub SignalR
+app.MapHub<SenhaHub>("/senhaHub"); // Adicionando o SignalR para comunicação em tempo real
+
+// Configurações de rotas
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Aqui, voc� pode adicionar os endpoints restantes para sua API
+// Inicializa os dados, como tipos de senha, se necessário
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<QueueContext>();
+
+    // Aplica as migrações pendentes
+    context.Database.Migrate();
+
+    // Inicializa os dados padrão (tipos de senha, painéis, tickets, etc.)
+    DbInitializer.Initialize(services);
+}
+
+// Inicializa a aplicação
+app.Run();
+
 // Endpoint para criar um painel
 app.MapPost("/painels", async (Painel painel, QueueContext db) =>
 {
-    if (painel is null)
+    if (painel == null || string.IsNullOrEmpty(painel.Senha))
     {
-        return Results.BadRequest("Painel n�o pode ser nulo.");
+        return Results.BadRequest("Painel não pode ser nulo ou sem senha.");
+    }
+
+    var painelExistente = await db.Painels.AnyAsync(p => p.Senha == painel.Senha);
+    if (painelExistente)
+    {
+        return Results.BadRequest("Já existe um painel com esta senha.");
     }
 
     db.Painels.Add(painel);
@@ -71,63 +137,47 @@ app.MapPost("/painels", async (Painel painel, QueueContext db) =>
     return Results.Created($"/painels/{painel.Id}", painel);
 });
 
-// Endpoint para listar pain�is
+// Endpoint para listar painéis
 app.MapGet("/painels", async (QueueContext db) =>
 {
     var painels = await db.Painels.ToListAsync();
     return Results.Ok(painels);
 });
 
-// Endpoint para atualizar um painel
+// Endpoint para atualizar painel
 app.MapPut("/painels/{id}", async (int id, Painel updatedPainel, QueueContext db) =>
 {
     var painel = await db.Painels.FindAsync(id);
-    if (painel is null) return Results.NotFound();
+    if (painel == null) return Results.NotFound();
 
-    painel.Senha = updatedPainel.Senha; // Atualiza a senha do painel
-    painel.Guiche = updatedPainel.Guiche; // Atualiza o guich�
+    painel.Senha = updatedPainel.Senha;
+    painel.Guiche = updatedPainel.Guiche;
     await db.SaveChangesAsync();
 
-    return Results.NoContent(); // Retorna 204 No Content
+    return Results.NoContent();
 });
 
-// Endpoint para deletar um painel
+// Endpoint para deletar painel
 app.MapDelete("/painels/{id}", async (int id, QueueContext db) =>
 {
     var painel = await db.Painels.FindAsync(id);
-    if (painel is null) return Results.NotFound();
+    if (painel == null) return Results.NotFound();
 
     db.Painels.Remove(painel);
     await db.SaveChangesAsync();
-    return Results.NoContent(); // Retorna 204 No Content
+    return Results.NoContent();
 });
 
-// Endpoint para criar um ticket com n�mero autom�tico
-app.MapPost("/tickets", async (Ticket ticket, QueueContext db) =>
+// Endpoint para gerar uma senha
+app.MapPost("/painels/gerar", (int tipoAtendimento, string service, ITokenService tokenService) =>
 {
-    if (ticket.PainelId <= 0) // Verifica se o PainelId � v�lido
+    if (tipoAtendimento <= 0 || string.IsNullOrEmpty(service))
     {
-        return Results.BadRequest("O PainelId deve ser fornecido.");
+        return Results.BadRequest("Tipo de atendimento e serviço devem ser fornecidos.");
     }
 
-    // Busca o �ltimo ticket criado
-    var lastTicket = await db.Tickets.OrderByDescending(t => t.Id).FirstOrDefaultAsync();
-
-    // Gera o pr�ximo n�mero sequencial
-    var nextTicketNumber = lastTicket == null ? "0001" : (int.Parse(lastTicket.Number) + 1).ToString("D4");
-
-    var newTicket = new Ticket
-    {
-        Number = nextTicketNumber,
-        IssuedAt = DateTime.Now,
-        Status = TicketStatus.Waiting,
-        PainelId = ticket.PainelId // Adiciona o PainelId ao ticket
-    };
-
-    db.Tickets.Add(newTicket);
-    await db.SaveChangesAsync();
-
-    return Results.Created($"/tickets/{newTicket.Id}", newTicket);
+    var senha = tokenService.GerarNovaSenha(tipoAtendimento, service); // Passando os dois parâmetros necessários
+    return Results.Ok(new { senha });
 });
 
 // Endpoint para listar tickets
@@ -137,49 +187,99 @@ app.MapGet("/tickets", async (QueueContext db) =>
     return Results.Ok(tickets);
 });
 
+/// Endpoint para criar um ticket
+app.MapPost("/tickets", async (Ticket ticket, QueueContext db) =>
+{
+    if (ticket.PainelId <= 0)
+    {
+        return Results.BadRequest("O PainelId deve ser fornecido.");
+    }
+
+    // Se o tipo não for fornecido, o valor padrão será 'Normal'
+    if (ticket.Tipo == TicketTipo.Normal || ticket.Tipo == TicketTipo.Preferencial)
+    {
+        var lastTicket = await db.Tickets.OrderByDescending(t => t.Number).FirstOrDefaultAsync();
+        int nextTicketNumber = (lastTicket == null) ? 1 : lastTicket.Number + 1;
+
+        var newTicket = new Ticket
+        {
+            Number = nextTicketNumber,
+            Status = TicketStatus.EmEspera,  // A senha inicia em "Em Espera"
+            Tipo = ticket.Tipo,  // Definindo o tipo do ticket
+            PainelId = ticket.PainelId
+        };
+
+        db.Tickets.Add(newTicket);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/tickets/{newTicket.Id}", newTicket);
+    }
+    else
+    {
+        return Results.BadRequest("Tipo de ticket inválido.");
+    }
+});
+
+
 // Endpoint para chamar um ticket
-app.MapPut("/tickets/call/{id}", async (int id, QueueContext db) =>
+app.MapPut("/tickets/call/{id}", async (int id, QueueContext db, IHubContext<SenhaHub> hubContext) =>
 {
     var ticket = await db.Tickets.FindAsync(id);
-    if (ticket is null) return Results.NotFound();
+    if (ticket == null)
+    {
+        return Results.NotFound("Ticket não encontrado.");
+    }
 
-    ticket.Status = TicketStatus.Called; // Atualiza o status para "Called"
-    ticket.CalledAt = DateTime.Now;      // Atualiza a hora de chamada do ticket
+    // Verificar se a senha está em espera
+    if (ticket.Status != TicketStatus.EmEspera)
+    {
+        return Results.BadRequest("A senha não está mais em espera.");
+    }
+
+    // Atualiza o status da senha para "Chamado"
+    ticket.Status = TicketStatus.Chamado;
+    ticket.CalledAt = DateTime.Now;
+
+    // A alteração do tipo está sendo corretamente persistida ou não?
+    // Verifique se o tipo está correto antes de salvar.
+    // Se necessário, insira a lógica para garantir que o tipo esteja correto.
+    // ticket.Tipo = algumTipo;
+
     await db.SaveChangesAsync();
 
-    return Results.NoContent(); // Retorna 204 No Content
+    // Notifica todos os clientes conectados sobre a nova senha chamada
+    await hubContext.Clients.All.SendAsync("ReceberSenhaAtualizada", new
+    {
+        ticket.Number,
+        Tipo = ticket.Tipo.ToString(),  // Converte o tipo para string
+        Guiche = ticket.Guiche?.Nome ?? "Não atribuído"
+    });
+
+    return Results.Ok(ticket);  // Retorna o ticket chamado
 });
 
-// Endpoint para cancelar um ticket
-app.MapPut("/tickets/cancel/{id}", async (int id, QueueContext db) =>
-{
-    var ticket = await db.Tickets.FindAsync(id);
-    if (ticket is null) return Results.NotFound();
-
-    ticket.Status = TicketStatus.Cancelled; // Atualiza o status para "Cancelled"
-    await db.SaveChangesAsync();
-
-    return Results.NoContent(); // Retorna 204 No Content
-});
-
-// Endpoint para chamar o pr�ximo ticket de um painel
+// Endpoint para exibir o próximo ticket na TV (sem chamá-lo ainda)
 app.MapPut("/painels/{painelId}/next-ticket", async (int painelId, QueueContext db) =>
 {
+    var painel = await db.Painels.FindAsync(painelId);
+    if (painel == null)
+    {
+        return Results.NotFound("Painel não encontrado.");
+    }
+
+    // Pega o próximo ticket que está "Em Espera" e ordena pela data de emissão
     var nextTicket = await db.Tickets
-        .Where(t => t.PainelId == painelId && t.Status == TicketStatus.Waiting)
-        .OrderBy(t => t.IssuedAt)
+        .Where(t => t.PainelId == painelId && t.Status == TicketStatus.EmEspera)
+        .OrderBy(t => t.IssuedAt)  // Garante a ordem de chegada
         .FirstOrDefaultAsync();
 
-    if (nextTicket is null)
+    if (nextTicket == null)
     {
         return Results.NotFound("Nenhum ticket em espera para esse painel.");
     }
 
-    nextTicket.Status = TicketStatus.Called;
-    nextTicket.CalledAt = DateTime.Now;
-
-    await db.SaveChangesAsync();
-    return Results.Ok(nextTicket);
+    // Exibe o ticket na TV, mas sem alterá-lo para "Chamado"
+    return Results.Ok(nextTicket);  // Apenas exibe o ticket na TV, sem marcar como chamado
 });
 
 // Endpoint para listar tickets por status para um painel
@@ -196,5 +296,3 @@ app.MapGet("/painels/{painelId}/tickets", async (int painelId, TicketStatus stat
 
     return Results.Ok(tickets);
 });
-
-app.Run();

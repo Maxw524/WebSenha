@@ -16,17 +16,6 @@
     right: 0;
 }
 
-.cabecalho {
-    height: 60px;
-    background-color: #004d40; /* Cor escura e sofisticada */
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
 .painel-senha {
     font-size: 24px;
     font-weight: bold; /* Destaca o título */
@@ -37,25 +26,57 @@
     flex: 1;
     height: calc(100% - 60px); /* Altura total menos cabeçalho */
     padding: 20px; /* Adiciona padding ao conteúdo */
+
 }
 
+/* Container onde os vídeos e imagens serão exibidos */
 #video-publicidade {
+
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
-    overflow: hidden;
-    position: relative; /* Necessário para deslocar o elemento */
-    top: 0; 
-    height: 700px; 
+    overflow: hidden; /* Esconde o conteúdo que ultrapassa o limite */
+    position: relative;
+    width: 100%; /* Garantir que o container ocupe 100% da largura disponível */
+    height: 720px; /* Defina a altura que você preferir */
+    background-color: black; /* Fundo preto para casos onde a imagem ou vídeo não preenchem todo o espaço */
 }
 
-    #video-publicidade video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    /* Definir o comportamento para imagens */
+    #video-publicidade img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%; /* A largura da imagem vai ser 100% do espaço disponível */
+        height: 100%; /* A altura da imagem vai ser 100% do espaço disponível */
+        object-fit: contain; /* A imagem se ajusta ao contêiner sem cortar, mantendo a proporção */
+        transition: opacity 1s ease-in-out; /* Transição suave de opacidade */
+        opacity: 0; /* Inicialmente invisível */
+        visibility: hidden; /* Inicialmente invisível */
     }
+
+    /* Definir o comportamento para vídeos */
+    #video-publicidade video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%; /* A largura do vídeo vai ser 100% do espaço disponível */
+        height: 100%; /* A altura do vídeo vai ser 100% do espaço disponível */
+        object-fit: contain; /* O vídeo vai se ajustar ao espaço sem cortar, mantendo a proporção */
+        object-position: center; /* Centraliza o vídeo caso ele precise de mais espaço */
+        transition: opacity 1s ease-in-out; /* Transição suave de opacidade */
+        opacity: 0; /* Inicialmente invisível */
+        visibility: hidden; /* Inicialmente invisível */
+    }
+
+    /* Classe ativa que torna a mídia visível */
+    #video-publicidade .active {
+        opacity: 1; /* A mídia ficará visível */
+        visibility: visible; /* Visível após a transição */
+    }
+
 
 
 #senha-container {
@@ -65,9 +86,17 @@
     justify-content: center; /* Centraliza verticalmente */
     align-items: stretch; /* Estica para a largura total */
     padding: 200px;
+    top: 30px
+}
+
+.senha-alinhada span {
+    display: inline-block; /* Faz o elemento ocupar apenas o espaço necessário */
+    margin: 7px; /* Remove qualquer margem padrão */
 }
 
 .senha-alinhada, .guiche-alinhado {
+    font-size: 1.5em;
+    font-weight: bold;
     font-size: 5vw; /* Tamanho da fonte proporcional à largura da viewport */
     color: #fff;
     background: #00796b;
@@ -80,6 +109,15 @@
     position: absolute; /* Necessário para deslocar o elemento */
     left: 5cm; /* Desloca o elemento 5 cm para a direita */
 }
+
+    .senha-alinhada .label-senha,
+    .senha-alinhada .label-guiche {
+        font-size: 35px; /* Tamanho menor para "Senha:" e "Guichê:" */
+        font-weight: 900; /* Peso da fonte mais leve */
+        display: inline-block; /* Para que fique na mesma linha */
+        margin-bottom: 5px; /* Adiciona um pequeno espaço abaixo */
+    }
+
 
 /* Media Queries para ajustes finos em diferentes tamanhos de tela */
 @media (max-width: 768px) {
@@ -100,54 +138,89 @@
     }
 }
 
-
-
-
+/* Ajuste para a seção de Últimas Chamadas */
 .ultima-chamada-alinhada {
-    font-size: 18px; /* Tamanho de fonte reduzido */
-    text-align: center;
-    padding: 35px;
-    margin: 0px 0;
     background: #004d40;
-    color: white;
-    border-radius: 5px;
-    width: 120%; 
+    font-size: 22px; /* Tamanho de fonte ajustado */
+    color: black;
+    padding: 25px 25px 25px 20px; /* Ajuste o padding para que o texto fique no topo */
+    margin: 0;
+    border-radius: 0px;
+    width: 102%; /* Mantém a largura completa */
     position: relative;
-    bottom: 20px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%); /* Centraliza horizontalmente */
     z-index: 999;
-}
-
-.rodape {
-    height: 40px;
-    background-color: #004d40;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-radius: 0 0 7px 7px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); /* Sombra superior */
 }
 
-/* Media Queries para responsividade */
+    /* Colocando o título "Últimas Chamadas" no topo */
+    .ultima-chamada-alinhada > span {
+        position: relative;
+        top: -25px; /* Ajusta a posição do texto no topo da div */
+        left: 40%;
+        transform: translateX(-50%);
+        font-size: 34px; /* Ajuste o tamanho da fonte do título */
+        font-weight: bold;
+        color: azure; /* Cor do texto */
+    }
+
+
+/* Flexbox para exibir as senhas lado a lado */
+#senhasChamadas {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: -10px;
+    min-height: 100px; /* Garante que haja altura suficiente para o conteúdo */
+}
+
+/* Estilo das senhas chamadas */
+.senha-chamada {
+    color: #00796b;
+    background: #e0f7fa;
+    font-size: 38px;
+    border-radius: 20px;
+    height: 160px; /* Defina a altura desejada */
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    opacity: 0; /* Inicialmente invisível */
+    transition: opacity 0.5s ease-in-out;
+}
+
+    .senha-chamada.visible {
+        opacity: 1; /* Torna a senha visível */
+    }
+
+    /* Estilo para senhas preferenciais */
+    .senha-chamada.preferencial {
+        background-color: #d4edda; /* Cor para senhas preferenciais */
+    }
+
+/* Responsividade para telas menores */
 @media (max-width: 768px) {
-    .senha-alinhada, .guiche-alinhado {
-        font-size: 30px; /* Diminui o tamanho da fonte em telas menores */
+    .senha-chamada {
+        width: 100%; /* Faz com que as senhas ocupem toda a largura */
+        font-size: 14px;
     }
 
-    .ultima-chamada-alinhada {
-        font-size: 14px; /* Ajusta a fonte para dispositivos menores */
-    }
-
-    .cabecalho {
-        height: 50px; /* Diminui a altura do cabeçalho */
-    }
-
-    .rodape {
-        height: 40px; /* Diminui a altura do rodapé */
+    #senhasChamadas {
+        justify-content: center; /* Centraliza as senhas em telas pequenas */
     }
 }
+
+    .senha-chamada.preferencial {
+        background-color: #d4edda; /* Cor diferente para senhas preferenciais */
+    }

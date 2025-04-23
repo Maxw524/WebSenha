@@ -1,41 +1,84 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace WebSenha.Models
 {
     public class Ticket
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "O número do ticket é obrigatório.")]
-        [StringLength(10, MinimumLength = 3, ErrorMessage = "O número do ticket deve ter entre 3 e 10 caracteres.")]
-        public string Number { get; set; } = string.Empty;
+        [Column("Numero")]
+        [Display(Name = "Número")]
+        [Required]
+        public int Number { get; set; }
 
-        [Required(ErrorMessage = "A data de emissão é obrigatória.")]
-        public DateTime IssuedAt { get; set; }
+        [Column("EmitidoEm")]
+        [Display(Name = "Emitido em")]
+        public DateTime IssuedAt { get; set; } = DateTime.UtcNow;
 
+        [Column("Status")]
+        [Display(Name = "Status")]
+        [Required]
+        public TicketStatus Status { get; set; }
+
+        [Column("ChamadoEm")]
+        [Display(Name = "Chamado em")]
         public DateTime? CalledAt { get; set; }
 
-        [ForeignKey("Service")]
-        public int ServiceId { get; set; }
-
-        // Adicionando a propriedade PainelId
-        [ForeignKey("Painel")]
-        public int PainelId { get; set; } // Adiciona a propriedade PainelId
-
+        [Column("PainelId")]
+        public int PainelId { get; set; }
         public Painel Painel { get; set; }
 
-        [Required(ErrorMessage = "O status do ticket é obrigatório.")]
-        public TicketStatus Status { get; set; }
+        [Column("Tipo")]
+        [Display(Name = "Tipo de Atendimento")]
+        [Required]
+        public TicketTipo Tipo { get; set; }
+
+        // Relacionamento com a entidade Guiche
+        [ForeignKey("GuicheId")]
+        public Guiche Guiche { get; set; }  // Propriedade de navegação
+
+        public int? GuicheId { get; set; }  // Chave estrangeira para Guiche (opcional, pode ser null)
+
+        // Método para chamar o ticket
+        public void ChamarTicket()
+        {
+            if (this.Status == TicketStatus.EmEspera)
+            {
+                this.Status = TicketStatus.Chamado;
+                this.CalledAt = DateTime.UtcNow;
+            }
+        }
     }
 
+    // Enum para o status do ticket
     public enum TicketStatus
     {
-        Waiting,
-        Called,
-        Served,
-        Cancelled
+        Pendente,
+        EmEspera,
+        Chamado,
+        Atendido,
+        Cancelado
+    }
+
+    // Enum para o tipo de atendimento (normal ou preferencial)
+    public enum TicketTipo
+    {
+        Normal,
+        Preferencial
+    }
+
+    // Classe Guiche (exemplo)
+    public class Guiche
+    {
+        [Key]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [Column("Nome")]
+        public string Nome { get; set; } // Nome do guichê
     }
 }

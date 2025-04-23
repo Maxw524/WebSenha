@@ -4,40 +4,51 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WebSenha</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <!-- CSS embutido para o cabeçalho -->
+    <style>
+        .cabecalho {
+            height: 60px;
+            margin-left: -20px;
+            width: 102%;
+            background-color: #004d40; /* Cor escura e sofisticada */
+            color: white;
+            width: 102%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+           
+        }
+
+            .cabecalho img {
+                max-width: 150px; /* Limita a largura da logo a 150px */
+                height: auto; /* Mantém a proporção da imagem */
+                margin: 10px;               
+            }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">WebSenha</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Painels" asp-action="Create">Chamar Senha</a>
-                        </li>
-                    </ul>
+    <div class="container-fluid">
+        <nav class="cabecalho">
+            <div class="row w-100">
+                <div class="col text-center">
+                    <h1 class="painel-senha">Painel de Senhas</h1>
+                </div>
+                <div class="col-auto">
+                    <img src="/img/Logo_sicoob.png" alt="Logo " />
                 </div>
             </div>
         </nav>
-    </header>
+    </div>
 
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        @RenderBody()
     </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/js/site.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

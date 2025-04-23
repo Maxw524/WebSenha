@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:6766",
+      "applicationUrl": "http://localhost:3000", // Porta usada no IIS Express
       "sslPort": 0
     }
   },
@@ -18,7 +18,7 @@
     "WebSenha": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://0.0.0.0:6766", // 0.0.0.0 faz a aplicação escutar em todos os IPs
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

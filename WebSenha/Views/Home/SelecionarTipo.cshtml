@@ -1,0 +1,175 @@
+﻿@{
+    ViewData["Title"] = "Selecionar Tipo de Senha";
+    var service = ViewData["Service"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- CSS embutido -->
+    <style>
+        html, body {
+            height: 100%; /* Garante que a página cubra 100% da altura da janela */
+            margin: 0;
+        }
+
+        body {
+            background-image: url('/img/background.png'); /* Caminho da imagem ajustado */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100%; /* Garante que a imagem de fundo preencha toda a altura */
+        }
+
+        .btn-block {
+            width: 1100px; /* Largura aumentada conforme solicitado */
+            height: 5cm;
+            font-weight: bold;
+            font-family: Jazz LET;
+            font-size: 3.5rem; /* Ajusta o tamanho da fonte */
+            background-color: #EDECEC; /* Cor de fundo branca */
+            color: black; /* Cor do texto preta */
+            border: 2px solid #000; /* Bordas pretas */
+            margin-bottom: 30px; /* Aumenta o espaço entre os botões */
+        }
+
+            .btn-block:hover {
+                background-color: #f0f0f0; /* Cor de fundo ao passar o mouse */
+            }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex flex-column align-items-center mt-5 w-100">
+        <form id="formTipoSenha">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <button id="btnPreferencial" class="btn btn-lg btn-primary btn-block mb-3" type="button" onclick="createPassword(1, '@service')">Preferencial</button>
+                <button id="btnNormal" class="btn btn-lg btn-secondary btn-block" type="button" onclick="createPassword(2, '@service')">Normal</button>
+            </div>
+        </form>
+    </div>
+
+    <h3 id="senhaGerada" style="display:none; margin-top:20px;" class="text-center"></h3>
+    <div id="erroMensagem" style="display:none; color:red; margin-top: 10px;" class="text-center"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var timeout;
+
+        function createPassword(tipoId, service) {
+            // Cancela o redirecionamento automático se o usuário já clicou no botão
+            clearTimeout(timeout);
+            $('#erroMensagem').hide();
+            $('#senhaGerada').hide();
+
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            console.log("Enviando requisição para criar senha com TipoId: " + tipoId + " para serviço " + service);
+
+            // Ajuste a URL no seu AJAX para a ação correta 'GerarToken' no TokenController
+            $.ajax({
+                url: '@Url.Action("GerarToken", "Token")', // Mudança para TokenController com a ação correta
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                data: { TipoId: tipoId, Service: service },
+                dataType: 'json',
+                success: function (response) {
+                    console.log("Resposta recebida: ", response);
+
+                    if (response.senha) {
+                        // Exibe a senha gerada e o status 'Pendente'
+                        $('#senhaGerada').text('Senha gerada: ' + response.senha + ' (' + (response.tipo === "P" ? "Preferencial" : "Normal") + ')').show();
+                        $('#senhaGerada').append('<br>Status: Pendente');  // Status Pendente
+
+                        // Imprime o cupom fiscal
+                        imprimirCupomFiscal(response.senha);
+                    } else if (response.erro) {
+                        $('#erroMensagem').text('Erro: ' + response.erro).show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro na requisição:', error);
+                    $('#erroMensagem').text('Erro na requisição: ' + error).show();
+                }
+            });
+        }
+
+        function imprimirCupomFiscal(senha) {
+            var content = `
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        font-size: 3rem;
+                        font-family: Arial, sans-serif;
+                    }
+                    .cupom {
+                        width: 40mm;
+                        padding: 5mm;
+                        font-size: 3rem;
+                    }
+                    .cupom .titulo {
+                        font-weight: bold;
+                        text-align: center;
+                        font-size: 3.5rem;
+                        margin-bottom: 10mm;
+                    }
+                    .cupom .linha {
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: 2.8rem;
+                        margin-bottom: 5mm;
+                    }
+                    .cupom .senha {
+                        font-weight: bold;
+                        font-size: 5rem;
+                    }
+                </style>
+                <div class="cupom">
+                    <div class="titulo">SENHA GERADA</div>
+                    <div class="linha">
+                        <span class="senha">${senha}</span>
+                    </div>
+                    <div class="linha">
+                        <span>${new Date().toLocaleString()}</span>
+                    </div>
+                    <hr />
+                </div>
+            `;
+
+            // Abre uma nova janela sem cabeçalhos, barras ou título
+            var printWindow = window.open('', '', 'width=400,height=600,location=no,menubar=no,toolbar=no,status=no,titlebar=no');
+
+            // Escreve o conteúdo HTML na nova janela
+            printWindow.document.write(content);
+            printWindow.document.close();
+
+            // Aguarda o carregamento da nova janela para iniciar a impressão
+            printWindow.onload = function () {
+                printWindow.print();  // Chama a função de impressão
+
+                // Após a impressão, espera 0.5 segundo para garantir que a impressão esteja concluída
+                setTimeout(function () {
+                    printWindow.close();  // Fecha a janela
+                }, 500);
+
+                // Após fechar a janela, redireciona para a página de tokens
+                setTimeout(function () {
+                    window.location.href = '@Url.Action("Token", "Home")';
+                }, 500);
+            };
+        }
+
+        // Redireciona para a tela de escolha de atendimento ou caixa após 10 segundos
+        timeout = setTimeout(function () {
+            window.location.href = '@Url.Action("Token", "Home")'; // Redireciona para a tela de token após o tempo limite
+        }, 10000);
+    </script>
+
+</body>
+</html>

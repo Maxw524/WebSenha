@@ -9,42 +9,42 @@
                 <h1 class="painel-senha">Painel de Senhas</h1>
             </div>
             <div class="col-auto">
-                <!-- Usar um caminho relativo para a imagem -->
-                <img src="~/img/logosicoobcredipinho-removebg-preview.png" alt="Logo Sicoob Credipinho" />
+                <img id="logo" src="/img/Logo_sicoob.png" alt="Logo" />
             </div>
+
         </div>
     </nav>
 
     <div class="row conteudo">
-        <div class="col-md-6 conteudo-Painel" id="video-publicidade">
-            <video controls>
-                <!-- Usar um caminho relativo para o vídeo -->
-                <source src="~/videos/video.mp4" type="video/mp4">
-                Seu navegador não suporta o elemento de vídeo.
-            </video>
+        <div class="col-md-6 col-sm-12 conteudo-Painel" id="video-publicidade">
+            <!-- O conteúdo de vídeo ou imagem será inserido aqui pelo JavaScript -->
         </div>
 
-        <div class="col-md-6 conteudo-Painel" id="senha-container">
+        <div class="col-md-6 col-sm-12 conteudo-Painel" id="senha-container">
             <h1 class="senha-alinhada">
-                Senha:<br>
-                <span id="senha"></span><br><br>
-                Guichê:<br>
-                <span id="guiche"></span>
+                <span class="label-senha">Senha:</span><br>
+                <span id="senha">Sem Senha</span><br>
+
+                <!-- Exibir apenas Preferencial ou Normal, sem a palavra "Tipo" -->
+                <span id="tipo-senha">Sem Tipo</span><br>
+
+                <span class="label-guiche">Guichê:</span><br>
+                <span id="guiche">Sem Guichê</span>
             </h1>
         </div>
     </div>
 
     <div class="ultima-chamada-alinhada">
-        Últimas Chamadas
+        <span>Últimas Chamadas</span>
+        <div id="senhasChamadas" class="senhas-chamadas" style="min-height: 200px;">
+            <!-- As últimas 3 senhas serão exibidas aqui -->
+        </div>
     </div>
-
-    <div id="senhasChamadas" class="senhas-chamadas"></div>
-
-    <footer class="rodape">
-        <p>Sicoob Credipinho</p>
-    </footer>
+   
+    <div id="erro" style="display:none;color:red;"></div>
 </div>
-
+<script src="/signaIr/signalr.min.js"></script><!-- Este script deve ser carregado antes do painel.js -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link href="~/css/painel.css" rel="stylesheet" />
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/painel.js"></script>
+<script src="~/js/painel.js"></script> 
